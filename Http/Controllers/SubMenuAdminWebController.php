@@ -2,12 +2,12 @@
 
 namespace Litepie\Menu\Http\Controllers;
 
-use App\Http\Controllers\AdminController as AdminController;
+use App\Http\Controllers\AdminWebController as AdminController;
 use Form;
-use Litepie\Menu\Http\Requests\MenuRequest;
+use Litepie\Menu\Http\Requests\AdminMenuWebRequest;
 use Litepie\Menu\Models\Menu as Menu;
 
-class SubMenuAdminController extends AdminController
+class SubMenuAdminWebController extends AdminController
 {
     private $view;
 
@@ -25,7 +25,7 @@ class SubMenuAdminController extends AdminController
      *
      * @return Response
      */
-    public function show(MenuRequest $request, $id)
+    public function show(AdminMenuWebRequest $request, $id)
     {
         $menu = $this->repository->find($id);
         Form::populate($menu);
@@ -40,7 +40,7 @@ class SubMenuAdminController extends AdminController
      *
      * @return Response
      */
-    public function create(MenuRequest $request)
+    public function create(AdminMenuWebRequest $request)
     {
         $menu            = $this->repository->newInstance([]);
         $menu->parent_id = $request->get('parent_id', 0);
@@ -57,24 +57,29 @@ class SubMenuAdminController extends AdminController
      *
      * @return Response
      */
-    public function store(MenuRequest $request)
+    public function store(AdminMenuWebRequest $request)
     {
         try {
             $attributes              = $request->all();
-            $attributes['user_id']   = user_id();
+            $attributes['user_id']   = user_id('admin.web');
             $attributes['parent_id'] = hashids_decode($attributes['parent_id']);
             $menu                    = $this->repository->create($attributes);
 
-            $this->responseCode     = 201;
-            $this->responseMessage  = trans('messages.success.created', ['Module' => trans('menu::menu.name')]);
-            $this->responseRedirect = trans_url('/admin/menu/submenu/' . $menu->getRouteKey());
+            return response()->json(
+                [
+                    'message'  => trans('messages.success.updated', ['Module' => trans('menu::menu.name')]),
+                    'code'     => 204,
+                    'redirect' => trans_url('/admin/menu/menu/' . $menu->getRouteKey()),
+                ],
+                201);
 
-            return $this->respond($request);
         } catch (Exception $e) {
-            $this->responseCode    = 400;
-            $this->responseMessage = $e->getMessage();
-
-            return $this->respond($request);
+            return response()->json(
+                [
+                    'message' => $e->getMessage(),
+                    'code'    => 400,
+                ],
+                400);
         }
     }
 
@@ -86,7 +91,7 @@ class SubMenuAdminController extends AdminController
      *
      * @return Response
      */
-    public function edit(MenuRequest $request, $id)
+    public function edit(AdminMenuWebRequest $request, $id)
     {
         $menu = $this->repository->find($id);
 
@@ -103,22 +108,31 @@ class SubMenuAdminController extends AdminController
      *
      * @return Response
      */
-    public function update(MenuRequest $request, $id)
+    public function update(AdminMenuWebRequest $request, $id)
     {
         try {
-            $menu = $this->repository->update($request->all(), $id);
 
-            $this->responseCode     = 204;
-            $this->responseMessage  = trans('messages.success.updated', ['Module' => trans('menu::menu.name')]);
-            $this->responseRedirect = trans_url('/admin/menu/submenu/' . $menu->getRouteKey());
+            $attributes = $request->all();
 
-            return $this->respond($request);
+            $menu = $this->repository->update($attributes, $id);
+
+            return response()->json([
+                'message'  => trans('messages.success.updated', ['Module' => trans('menu::menu.name')]),
+                'code'     => 204,
+                'redirect' => trans_url('/admin/menu/menu/' . $menu->getRouteKey()),
+            ], 201);
+
         } catch (Exception $e) {
-            $this->responseCode     = 400;
-            $this->responseMessage  = $e->getMessage();
-            $this->responseRedirect = trans_url('/admin/menu/submenu/' . $menu->getRouteKey());
 
-            return $this->respond($request);
+            return response()->json(
+                [
+                    'message'  => $e->getMessage(),
+                    'code'     => 400,
+                    'redirect' => trans_url('/admin/menu/menu/' . $menu->getRouteKey()),
+                ],
+                400);
+
         }
+
     }
 }
