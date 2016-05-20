@@ -5,7 +5,7 @@ namespace Litepie\Menu\Http\Requests;
 use App\Http\Requests\Request;
 use User;
 
-class MenuRequest extends Request
+class AdminMenuWebRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
