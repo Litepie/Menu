@@ -19,7 +19,7 @@
         {!!Form::token()!!}
         {!!Form::hidden('upload_folder')!!}
         <div class="tab-content">
-            @include('menu::partial.menu')
+            @include('menu::admin.partial.menu')
         </div>
         {!!Form::close()!!}
     </div>
