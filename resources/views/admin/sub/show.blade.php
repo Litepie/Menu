@@ -20,7 +20,7 @@
         ->method('PUT')
         ->action(trans_url('admin/menu/menu/'. $menu->getRouteKey()))!!}
         <div class="tab-content">
-            @include('menu::partial.submenu')
+            @include('menu::admin.partial.submenu')
         </div>
         {!!Form::close()!!}
     </div>

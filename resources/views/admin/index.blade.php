@@ -1,17 +1,17 @@
 @extends('admin::curd.index')
 @section('heading')
 <h1>
-{!! trans('menu.name') !!}
-<small> {!! trans('cms.manage') !!} {!! trans('menu.names') !!}</small>
+{!! trans('menu::menu.name') !!}
+<small> {!! trans('cms.manage') !!} {!! trans('menu::menu.names') !!}</small>
 </h1>
 @stop
 @section('title')
-{!! trans('menu.names') !!}
+{!! trans('menu::menu.names') !!}
 @stop
 @section('breadcrumb')
 <ol class="breadcrumb">
     <li><a href="{!! trans_url('admin') !!}"><i class="fa fa-dashboard"></i> {!! trans('cms.home') !!} </a></li>
-    <li class="active">{!! trans('menu.names') !!}</li>
+    <li class="active">{!! trans('menu::menu.names') !!}</li>
 </ol>
 @stop
 @section('entry')
@@ -32,7 +32,7 @@
 
         <div class="tab-content">
             <div class="tab-pane active" id="details">
-                {!!Menu::menu($parent->key, 'menu::menu.nestable')!!}
+                {!!Menu::menu($parent->key, 'menu::admin.menu.nestable')!!}
             </div>
         </div>
     </div>
