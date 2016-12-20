@@ -2,13 +2,13 @@
 
 namespace Litepie\Menu\Http\Controllers;
 
-use App\Http\Controllers\AdminWebController as AdminController;
+use App\Http\Controllers\AdminController as AdminController;
 use Form;
-use Litepie\Menu\Http\Requests\AdminMenuWebRequest;
+use Litepie\Menu\Http\Requests\AdminMenuRequest;
 use Litepie\Menu\Models\Menu;
 use Response;
 
-class MenuAdminWebController extends AdminController
+class MenuAdminController extends AdminController
 {
 
     private $view;
@@ -32,14 +32,14 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function index(AdminMenuWebRequest $request, $parent = 1)
+    public function index(AdminMenuRequest $request, $parent = 1)
     {
         $parent   = $this->repository->find(hashids_encode($parent));
         $rootMenu = $this->repository->rootMenues();
 
         $this->theme->prependTitle(trans('menu::menu.names') . ' :: ');
 
-        $this->theme->asset()->container('footer')->add('nestable', 'packages/nestable/jquery.nestable.js');
+        $this->theme->asset()->container('footer')->usepath()->add('nestable', 'packages/nestable/jquery.nestable.js');
 
         return $this->theme->of('menu::admin.index', compact('rootMenu', 'parent'))->render();
     }
@@ -52,20 +52,20 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function show(AdminMenuWebRequest $request, $id)
+    public function show(AdminMenuRequest $request, $parent)
     {
 
         if ($request->ajax()) {
-            $menu = $this->repository->find($id);
+            $menu = $parent;
 
             Form::populate($menu);
 
             return view('menu::admin.show', compact('menu'));
         }
 
-        $parent   = $this->repository->find($id);
+        //$menu   = $this->repository->find($id);
         $rootMenu = $this->repository->rootMenues();
-        $this->theme->asset()->container('footer')->add('nestable', 'packages/nestable/jquery.nestable.js');
+        $this->theme->asset()->container('footer')->usepath()->add('nestable', 'packages/nestable/jquery.nestable.js');
 
         $this->theme->prependTitle(trans('menu::menu.names') . ' :: ');
 
@@ -79,7 +79,7 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function create(AdminMenuWebRequest $request, Menu $menu)
+    public function create(AdminMenuRequest $request, Menu $menu)
     {
         $menu = $this->repository->newInstance([]);
 
@@ -95,7 +95,7 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function store(AdminMenuWebRequest $request)
+    public function store(AdminMenuRequest $request)
     {
         try {
             $attributes            = $request->all();
@@ -129,9 +129,9 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function edit(AdminMenuWebRequest $request, $id)
+    public function edit(AdminMenuRequest $request, $menu)
     {
-        $data['menu'] = $this->repository->find($id);
+        $data['menu'] = $menu;
         Form::populate($data['menu']);
 
         return view('menu::admin.edit', $data);
@@ -145,13 +145,13 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function update(AdminMenuWebRequest $request, $id)
+    public function update(AdminMenuRequest $request, $menu)
     {
         try {
 
             $attributes = $request->all();
 
-            $menu = $this->repository->update($attributes, $id);
+            $menu->update($attributes);
 
             return response()->json(
                 [
@@ -182,10 +182,9 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function destroy(AdminMenuWebRequest $request, $id)
+    public function destroy(AdminMenuRequest $request, Menu $menu)
     {
-        $cid = hashids_decode($id);
-
+        $cid = $menu->id;
         if ($this->repository->findByField('parent_id', $cid)->count() > 0) {
             return response()->json([
                 'message' => 'Child menu exists.',
@@ -196,9 +195,7 @@ class MenuAdminWebController extends AdminController
 
         try {
 
-            $menu = $this->repository->find($id);
             $menu->delete();
-
             return response()->json([
                 'message'  => trans('messages.success.deleted', ['Module' => trans('menu::menu.name')]),
                 'code'     => 202,
@@ -219,12 +216,12 @@ class MenuAdminWebController extends AdminController
     /**
      * Update tree structure  of the menu.
      *
-     * @param AdminMenuWebRequest $request
+     * @param AdminMenuRequest $request
      * @param type $id
      *
      * @return type
      */
-    public function tree(AdminMenuWebRequest $request, $id)
+    public function tree(AdminMenuRequest $request, $id)
     {
         $this->repository->updateTree($id, $request->get('tree'));
     }
@@ -234,7 +231,7 @@ class MenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function nested(AdminMenuWebRequest $request, $parent = 1)
+    public function nested(AdminMenuRequest $request, $parent = 1)
     {
         $parent = $this->repository->all();
     }

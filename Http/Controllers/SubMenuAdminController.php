@@ -2,12 +2,12 @@
 
 namespace Litepie\Menu\Http\Controllers;
 
-use App\Http\Controllers\AdminWebController as AdminController;
+use App\Http\Controllers\AdminController as AdminController;
 use Form;
-use Litepie\Menu\Http\Requests\AdminMenuWebRequest;
+use Litepie\Menu\Http\Requests\AdminMenuRequest;
 use Litepie\Menu\Models\Menu as Menu;
 
-class SubMenuAdminWebController extends AdminController
+class SubMenuAdminController extends AdminController
 {
     private $view;
 
@@ -25,7 +25,7 @@ class SubMenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function show(AdminMenuWebRequest $request, $id)
+    public function show(AdminMenuRequest $request, $id)
     {
         $menu = $this->repository->find($id);
         Form::populate($menu);
@@ -40,7 +40,7 @@ class SubMenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function create(AdminMenuWebRequest $request)
+    public function create(AdminMenuRequest $request)
     {
         $menu            = $this->repository->newInstance([]);
         $menu->parent_id = $request->get('parent_id', 0);
@@ -57,7 +57,7 @@ class SubMenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function store(AdminMenuWebRequest $request)
+    public function store(AdminMenuRequest $request)
     {
         try {
             $attributes              = $request->all();
@@ -91,7 +91,7 @@ class SubMenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function edit(AdminMenuWebRequest $request, $id)
+    public function edit(AdminMenuRequest $request, $id)
     {
         $menu = $this->repository->find($id);
 
@@ -108,7 +108,7 @@ class SubMenuAdminWebController extends AdminController
      *
      * @return Response
      */
-    public function update(AdminMenuWebRequest $request, $id)
+    public function update(AdminMenuRequest $request, $id)
     {
         try {
 
