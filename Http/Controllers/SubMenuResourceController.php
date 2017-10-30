@@ -2,15 +2,14 @@
 
 namespace Litepie\Menu\Http\Controllers;
 
-use App\Http\Controllers\AdminController as AdminController;
+use App\Http\Controllers\ResourceController as ResourceController;
 use Form;
 use Litepie\Menu\Http\Requests\MenuRequest;
 use Litepie\Menu\Interfaces\MenuRepositoryInterface;
 use Litepie\Menu\Models\Menu as Menu;
 
-class SubMenuAdminController extends AdminController
+class SubMenuResourceController extends ResourceController
 {
-    private $view;
 
     public function __construct(MenuRepositoryInterface $menu)
     {

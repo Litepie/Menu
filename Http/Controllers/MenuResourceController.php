@@ -4,17 +4,15 @@ namespace Litepie\Menu\Http\Controllers;
 
 namespace Litepie\Menu\Http\Controllers;
 
-use App\Http\Controllers\AdminController as AdminController;
+use App\Http\Controllers\ResourceController as BaseController;
 use Form;
 use Litepie\Menu\Http\Requests\MenuRequest;
 use Litepie\Menu\Interfaces\MenuRepositoryInterface;
 use Litepie\Menu\Models\Menu;
 use Response;
 
-class MenuAdminController extends AdminController
+class MenuResourceController extends BaseController
 {
-
-    private $view;
 
     /**
      * Initialize page controller.
@@ -25,9 +23,9 @@ class MenuAdminController extends AdminController
      */
     public function __construct(MenuRepositoryInterface $menu)
     {
+        parent::__construct();
         $this->repository = $menu;
 
-        parent::__construct();
     }
 
     /**
@@ -40,11 +38,10 @@ class MenuAdminController extends AdminController
         $parent   = $this->repository->find(hashids_encode($parent));
         $rootMenu = $this->repository->rootMenues();
 
-        $this->theme->prependTitle(trans('menu::menu.names'));
-
-        $this->theme->asset()->container('footer')->usepath()->add('nestable', 'packages/nestable/jquery.nestable.js');
-
-        return $this->theme->of('menu::admin.index', compact('rootMenu', 'parent'))->render();
+        return $this->response->title(trans('menu::menu.names'))
+            ->view('menu::admin.index')
+            ->data(compact('rootMenu', 'parent'))
+            ->output();
     }
 
     /**
@@ -66,13 +63,11 @@ class MenuAdminController extends AdminController
             return view('menu::admin.show', compact('menu'));
         }
 
-        //$menu   = $this->repository->find($id);
         $rootMenu = $this->repository->rootMenues();
-        $this->theme->asset()->container('footer')->usepath()->add('nestable', 'packages/nestable/jquery.nestable.js');
-
-        $this->theme->prependTitle(trans('menu::menu.names'));
-
-        return $this->theme->of('menu::admin.index', compact('rootMenu', 'parent'))->render();
+        return $this->response->title(trans('menu::menu.names'))
+            ->view($this->getView('admin.index', 'menu'))
+            ->data(compact('rootMenu', 'parent'))
+            ->output();
     }
 
     /**
@@ -105,21 +100,20 @@ class MenuAdminController extends AdminController
             $attributes['user_id'] = user_id('admin.web');
             $menu                  = $this->repository->create($attributes);
 
-            return response()->json(
-                [
-                    'message'  => trans('messages.success.updated', ['Module' => trans('menu::menu.name')]),
-                    'code'     => 204,
-                    'redirect' => trans_url('/admin/menu/menu/' . $menu->getRouteKey()),
-                ],
-                201);
+            return $this->response
+                ->message(trans('messages.success.created', ['Module' => trans('menu::menu.name')]))
+                ->code(204)
+                ->status('success')
+                ->url(guard_url('/menu/menu/' . $menu->getRouteKey()))
+                ->redirect();
 
         } catch (Exception $e) {
-            return response()->json(
-                [
-                    'message' => $e->getMessage(),
-                    'code'    => 400,
-                ],
-                400);
+            return $this->response
+                ->message($e->getMessage())
+                ->code(400)
+                ->status('error')
+                ->url(guard_url('/menu/menu'))
+                ->redirect();
         }
 
     }
@@ -156,23 +150,17 @@ class MenuAdminController extends AdminController
 
             $menu->update($attributes);
 
-            return response()->json(
-                [
-                    'message'  => trans('messages.success.updated', ['Module' => trans('menu::menu.name')]),
-                    'code'     => 204,
-                    'redirect' => trans_url('/admin/menu/menu/' . $menu->getRouteKey()),
-                ],
-                201);
-
+            return $this->response->message(trans('messages.success.updated', ['Module' => trans('menu::menu.name')]))
+                ->code(204)
+                ->status('success')
+                ->url(guard_url('/menu/menu/' . $menu->getRouteKey()))
+                ->redirect();
         } catch (Exception $e) {
-
-            return response()->json(
-                [
-                    'message'  => $e->getMessage(),
-                    'code'     => 400,
-                    'redirect' => trans_url('/admin/menu/menu/' . $menu->getRouteKey()),
-                ],
-                400);
+            return $this->response->message($e->getMessage())
+                ->code(400)
+                ->status('error')
+                ->url(guard_url('/menu/menu/' . $menu->getRouteKey()))
+                ->redirect();
 
         }
 
@@ -200,19 +188,19 @@ class MenuAdminController extends AdminController
         try {
 
             $menu->delete();
-            return response()->json([
-                'message'  => trans('messages.success.deleted', ['Module' => trans('menu::menu.name')]),
-                'code'     => 202,
-                'redirect' => trans_url('/admin/menu/menu/0'),
-            ], 202);
+            return $this->response->message(trans('messages.success.deleted', ['Module' => trans('menu::menu.name')]))
+                ->code(202)
+                ->status('success')
+                ->url(guard_url('/menu/menu'))
+                ->redirect();
 
         } catch (Exception $e) {
 
-            return response()->json([
-                'message'  => $e->getMessage(),
-                'code'     => 400,
-                'redirect' => trans_url('/admin/menu/menu/' . $menu->getRouteKey()),
-            ], 400);
+            return $this->response->message($e->getMessage())
+                ->code(400)
+                ->status('error')
+                ->url(guard_url('/menu/menu/' . $menu->getRouteKey()))
+                ->redirect();
         }
 
     }
