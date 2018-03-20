@@ -17,38 +17,6 @@ return [
      */
     'modules'   => ['menu'],
 
-    'image'    => [
-
-        'sm' => [
-            'width'     => '140',
-            'height'    => '140',
-            'action'    => 'fit',
-            'watermark' => 'img/logo/default.png',
-        ],
-
-        'md' => [
-            'width'     => '370',
-            'height'    => '420',
-            'action'    => 'fit',
-            'watermark' => 'img/logo/default.png',
-        ],
-
-        'lg' => [
-            'width'     => '780',
-            'height'    => '497',
-            'action'    => 'fit',
-            'watermark' => 'img/logo/default.png',
-        ],
-        'xl' => [
-            'width'     => '800',
-            'height'    => '530',
-            'action'    => 'fit',
-            'watermark' => 'img/logo/default.png',
-        ],
-
-    ],
-
-    
     'menu'       => [
         'model'             => 'Litepie\Menu\Models\Menu',
         'table'             => 'menus',
