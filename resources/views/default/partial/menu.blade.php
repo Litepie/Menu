@@ -1,6 +1,9 @@
-            <div class="tab-pane active disabled" id="details">
-            <div class="tab-pan-title"> {{ trans('app.view') }} menu [{{$menu->name ?? 'New menu'}}]</div>
-               <div class="row">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="app-entry-form-section" id="basic">
+                <div class="section-title">{{ trans('app.view') }} menu [{{$menu->name ?? 'New menu'}}]</div>
+                <div class="row">
                     <div class="col-md-6 ">
                         {!! Form::text('name')
                         -> label(trans('menu::menu.label.name'))
@@ -14,6 +17,7 @@
                         -> placeholder(trans('menu::menu.placeholder.key'))!!}
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-6 ">
                         {!! Form::text('order')
@@ -35,3 +39,6 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
