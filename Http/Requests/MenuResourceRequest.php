@@ -4,7 +4,7 @@ namespace Litepie\Menu\Http\Requests;
 
 use Litepie\Http\Request\AbstractRequest;
 
-class MenuRequest extends AbstractRequest
+class MenuResourceRequest extends AbstractRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,12 +17,12 @@ class MenuRequest extends AbstractRequest
 
         if (is_null($this->model)) {
             // Determine if the user is authorized to access menu module,
-            return $this->user()->can('view', app(config('menu.menu.model.repository')));
+            return $this->user()->can('view', app(config('menu.menu.model.model')));
         }
 
         if ($this->isWorkflow()) {
             // Determine if the user is authorized to change status of an entry,
-            return $this->can($this->getStatus());
+            return $this->can($this->getTransition());
         }
 
         if ($this->isCreate() || $this->isStore()) {
@@ -42,6 +42,7 @@ class MenuRequest extends AbstractRequest
 
         // Determine if the user is authorized to view the module.
         return $this->can('view');
+
     }
 
     /**
@@ -54,16 +55,14 @@ class MenuRequest extends AbstractRequest
         if ($this->isStore()) {
             // validation rule for create request.
             return [
-                // 'name'  => 'required',
-                // 'url'   => 'required'
+
             ];
         }
 
         if ($this->isUpdate()) {
             // Validation rule for update request.
             return [
-                // 'name'  => 'required',
-                // 'url'   => 'required'
+
             ];
         }
 
@@ -72,4 +71,5 @@ class MenuRequest extends AbstractRequest
 
         ];
     }
+
 }
